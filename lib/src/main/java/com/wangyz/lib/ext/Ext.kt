@@ -1,4 +1,4 @@
-package com.wangyz.inspector.ext
+package com.wangyz.lib.ext
 
 import android.view.View
 

@@ -1,7 +1,7 @@
-package com.wangyz.inspector.util
+package com.wangyz.lib.util
 
 import android.util.Log
-import com.wangyz.inspector.Constants
+import com.wangyz.lib.Constants
 
 
 /**

@@ -10,13 +10,13 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.NestedScrollView
-import com.wangyz.inspector.Constants
 import com.wangyz.inspector.R
-import com.wangyz.inspector.delegate.AccessibilityDelegate
-import com.wangyz.inspector.ext.simpleId
-import com.wangyz.inspector.hierarchy.ViewHierarchy
-import com.wangyz.inspector.util.LogUtils
-import com.wangyz.inspector.window.EventAddWindow
+import com.wangyz.lib.Constants
+import com.wangyz.lib.delegate.AccessibilityDelegate
+import com.wangyz.lib.ext.simpleId
+import com.wangyz.lib.hierarchy.ViewHierarchy
+import com.wangyz.lib.util.LogUtils
+import com.wangyz.lib.window.EventAddWindow
 
 
 class MainActivity : AppCompatActivity() {

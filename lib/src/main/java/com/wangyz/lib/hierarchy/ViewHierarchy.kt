@@ -1,4 +1,4 @@
-package com.wangyz.inspector.hierarchy
+package com.wangyz.lib.hierarchy
 
 import android.view.View
 import android.view.ViewGroup

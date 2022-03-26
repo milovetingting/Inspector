@@ -1,4 +1,4 @@
-package com.wangyz.inspector.delegate
+package com.wangyz.lib.delegate
 
 import android.view.View
 import android.view.accessibility.AccessibilityEvent

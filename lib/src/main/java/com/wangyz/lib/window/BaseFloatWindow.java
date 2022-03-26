@@ -1,6 +1,6 @@
-package com.wangyz.inspector.window;
+package com.wangyz.lib.window;
 
-import static com.wangyz.inspector.Constants.WINDOW_PERMISSION;
+import static com.wangyz.lib.Constants.WINDOW_PERMISSION;
 
 import android.app.Activity;
 import android.content.Context;

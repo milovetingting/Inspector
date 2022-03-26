@@ -1,11 +1,11 @@
-package com.wangyz.inspector.window
+package com.wangyz.lib.window
 
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.FragmentActivity
-import com.wangyz.inspector.R
+import com.wangyz.lib.R
 
 
 /**
