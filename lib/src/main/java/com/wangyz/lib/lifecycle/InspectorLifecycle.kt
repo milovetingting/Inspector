@@ -21,7 +21,8 @@ internal class InspectorLifecycle {
     companion object {
         const val STATE_CREATE = 1
         const val STATE_RESUME = 2
-        const val STATE_DESTROY = 3
+        const val STATE_PAUSE = 3
+        const val STATE_DESTROY = 4
     }
 
     var currentActivity: Activity? = null
@@ -45,6 +46,10 @@ internal class InspectorLifecycle {
             onActivityChanged(activity, STATE_RESUME)
         }
 
+        override fun onActivityPaused(activity: Activity) {
+            onActivityChanged(activity, STATE_PAUSE)
+        }
+
         override fun onActivityDestroyed(activity: Activity) {
             if (currentActivity === activity) {
                 onActivityChanged(null, STATE_DESTROY)
@@ -52,7 +57,6 @@ internal class InspectorLifecycle {
         }
 
         override fun onActivityStarted(activity: Activity) {}
-        override fun onActivityPaused(activity: Activity) {}
         override fun onActivityStopped(activity: Activity) {}
         override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
     }
@@ -65,6 +69,9 @@ internal class InspectorLifecycle {
             when (state) {
                 STATE_RESUME -> {
                     inspectorLifecycleState.onResume()
+                }
+                STATE_PAUSE -> {
+                    inspectorLifecycleState.onPause()
                 }
             }
         }

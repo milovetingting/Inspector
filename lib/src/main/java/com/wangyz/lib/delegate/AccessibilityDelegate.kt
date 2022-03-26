@@ -14,7 +14,7 @@ import android.view.accessibility.AccessibilityEvent
  * @version
  */
 class AccessibilityDelegate(
-    private val originDelegate: View.AccessibilityDelegate?,
+    val originDelegate: View.AccessibilityDelegate?,
     private val perform: (view: View?) -> Unit
 ) :
     View.AccessibilityDelegate() {

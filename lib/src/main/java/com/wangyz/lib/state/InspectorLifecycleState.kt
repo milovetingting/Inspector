@@ -52,18 +52,25 @@ class InspectorLifecycleState(private val activity: Activity) {
 
     private fun setAccessibilityDelegate(view: View?) {
         view?.apply {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                accessibilityDelegate = AccessibilityDelegate(accessibilityDelegate) {
-                    LogUtils.i("${this.simpleId} accessibilityDelegate-->click")
-                    if (!hasEvent(it)) {
-                        LogUtils.i("准备注册事件")
-                        anchorView = it!!
-                        showDialog()
-                    } else {
-                        LogUtils.i("已经注册事件")
-                        Toast.makeText(activity, "已经注册事件", Toast.LENGTH_SHORT).show()
-                    }
+            accessibilityDelegate = AccessibilityDelegate(accessibilityDelegate) {
+                LogUtils.i("${this.simpleId} accessibilityDelegate-->click")
+                if (!hasEvent(it)) {
+                    LogUtils.i("准备注册事件")
+                    anchorView = it!!
+                    showDialog()
+                } else {
+                    LogUtils.i("已经注册事件")
+                    Toast.makeText(activity, "已经注册事件", Toast.LENGTH_SHORT).show()
                 }
+            }
+        }
+    }
+
+    private fun resetAccessibilityDelegate(view: View?) {
+        view?.apply {
+            if (accessibilityDelegate is AccessibilityDelegate) {
+                accessibilityDelegate =
+                    (accessibilityDelegate as AccessibilityDelegate).originDelegate
             }
         }
     }
@@ -94,6 +101,14 @@ class InspectorLifecycleState(private val activity: Activity) {
         imageView.y = (anchorRect.top - rootViewRect.top).toFloat()
     }
 
+    private fun removeFlags() {
+        val flags = views.filter { view -> view.tag is Pair<*, *> }
+        flags.forEach { view ->
+            rootView.removeView(view)
+            views.remove(view)
+        }
+    }
+
     private fun showDialog() {
         dialog.show()
     }
@@ -118,8 +133,14 @@ class InspectorLifecycleState(private val activity: Activity) {
             setAccessibilityDelegate(view)
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            scrollView?.setOnScrollChangeListener(scrollChangeListener)
+        scrollView?.setOnScrollChangeListener(scrollChangeListener)
+    }
+
+    fun onPause() {
+
+        views.forEach { view ->
+            resetAccessibilityDelegate(view)
         }
+
     }
 }
