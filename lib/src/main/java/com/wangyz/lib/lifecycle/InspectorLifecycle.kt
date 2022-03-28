@@ -25,8 +25,9 @@ internal class InspectorLifecycle {
         const val STATE_DESTROY = 4
     }
 
-    var currentActivity: Activity? = null
-        private set
+    private var currentActivity: Activity? = null
+
+    private var inspectorLifecycleState: InspectorLifecycleState? = null
 
     fun register(application: Application) {
         application.registerActivityLifecycleCallbacks(activityLifecycle)
@@ -51,9 +52,7 @@ internal class InspectorLifecycle {
         }
 
         override fun onActivityDestroyed(activity: Activity) {
-            if (currentActivity === activity) {
-                onActivityChanged(null, STATE_DESTROY)
-            }
+            onActivityChanged(activity, STATE_DESTROY)
         }
 
         override fun onActivityStarted(activity: Activity) {}
@@ -62,19 +61,22 @@ internal class InspectorLifecycle {
     }
 
     @MainThread
-    private fun onActivityChanged(newActivity: Activity?, state: Int) {
-        currentActivity = newActivity
-        currentActivity?.apply {
-            val inspectorLifecycleState = InspectorLifecycleState(this)
-            when (state) {
-                STATE_RESUME -> {
-                    inspectorLifecycleState.onResume()
-                }
-                STATE_PAUSE -> {
-                    inspectorLifecycleState.onPause()
-                }
+    private fun onActivityChanged(newActivity: Activity, state: Int) {
+
+        if (currentActivity != newActivity) {
+            currentActivity = newActivity
+            inspectorLifecycleState = InspectorLifecycleState(currentActivity!!)
+        }
+
+        when (state) {
+            STATE_RESUME -> {
+                inspectorLifecycleState?.onResume()
+            }
+            STATE_PAUSE -> {
+                inspectorLifecycleState?.onPause()
             }
         }
+
     }
 
 }

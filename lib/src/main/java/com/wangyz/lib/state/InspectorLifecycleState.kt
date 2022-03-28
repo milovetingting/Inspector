@@ -2,7 +2,6 @@ package com.wangyz.lib.state
 
 import android.app.Activity
 import android.graphics.Rect
-import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -36,7 +35,9 @@ class InspectorLifecycleState(private val activity: Activity) {
         ViewHierarchy.getAllChildViews(rootView)
     }
 
-    private val scrollView = views.filterIsInstance<NestedScrollView>().firstOrNull()
+    private val scrollView by lazy {
+        views.filterIsInstance<NestedScrollView>().firstOrNull()
+    }
 
     private lateinit var anchorView: View
 
@@ -47,6 +48,20 @@ class InspectorLifecycleState(private val activity: Activity) {
             addFlag(anchorView)
         }, closeCallback = {
             LogUtils.i("close")
+        })
+    }
+
+    private val scrollChangeListener by lazy {
+        (View.OnScrollChangeListener { p0, p1, p2, p3, p4 ->
+            val flags = views.filter { view -> view.tag is Pair<*, *> }
+            flags.forEach { view ->
+                rootView.removeView(view)
+                views.remove(view)
+                val tag = view.tag as? Pair<String, View>
+                tag?.apply {
+                    addFlag(second)
+                }
+            }
         })
     }
 
@@ -111,20 +126,6 @@ class InspectorLifecycleState(private val activity: Activity) {
 
     private fun showDialog() {
         dialog.show()
-    }
-
-    private val scrollChangeListener by lazy {
-        (View.OnScrollChangeListener { p0, p1, p2, p3, p4 ->
-            val flags = views.filter { view -> view.tag is Pair<*, *> }
-            flags.forEach { view ->
-                rootView.removeView(view)
-                views.remove(view)
-                val tag = view.tag as? Pair<String, View>
-                tag?.apply {
-                    addFlag(second)
-                }
-            }
-        })
     }
 
     fun onResume() {
