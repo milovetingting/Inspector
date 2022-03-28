@@ -11,11 +11,13 @@ import androidx.core.widget.NestedScrollView
 import com.wangyz.lib.R
 import com.wangyz.lib.config.Config
 import com.wangyz.lib.delegate.AccessibilityDelegate
+import com.wangyz.lib.dialog.CommitDialog
 import com.wangyz.lib.dialog.EventDialog
 import com.wangyz.lib.ext.simpleId
 import com.wangyz.lib.hierarchy.ViewHierarchy
 import com.wangyz.lib.inspector.Inspector
 import com.wangyz.lib.util.LogUtils
+import com.wangyz.lib.window.FloatWindow
 
 
 /**
@@ -154,6 +156,16 @@ class InspectorLifecycleState(private val activity: Activity) {
 
     private fun showDialog() {
         dialog.show()
+    }
+
+    fun onCreate() {
+        FloatWindow().setupWindow(activity) {
+            CommitDialog(activity, commitCallback = {
+                Toast.makeText(activity, "提交", Toast.LENGTH_SHORT).show()
+            }, closeCallback = {
+
+            }).show()
+        }
     }
 
     fun onResume() {

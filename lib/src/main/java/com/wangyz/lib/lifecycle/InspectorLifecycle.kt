@@ -69,6 +69,9 @@ internal class InspectorLifecycle {
         }
 
         when (state) {
+            STATE_CREATE -> {
+                inspectorLifecycleState?.onCreate()
+            }
             STATE_RESUME -> {
                 inspectorLifecycleState?.onResume()
             }
