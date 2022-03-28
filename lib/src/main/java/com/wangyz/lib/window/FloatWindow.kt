@@ -23,6 +23,7 @@ class FloatWindow() {
             //设置大小 自适应
             width = WRAP_CONTENT
             height = WRAP_CONTENT
+            gravity = Gravity.LEFT or Gravity.TOP
             flags =
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         }

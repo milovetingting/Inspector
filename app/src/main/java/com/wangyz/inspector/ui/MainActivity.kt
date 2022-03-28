@@ -1,5 +1,6 @@
 package com.wangyz.inspector.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -15,7 +16,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun click1(view: View) {
-        Toast.makeText(this, "原有的点击事件", Toast.LENGTH_SHORT).show()
+        val intent = Intent(this, SecondActivity::class.java)
+        startActivity(intent)
     }
 
 }
