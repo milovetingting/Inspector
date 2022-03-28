@@ -3,6 +3,9 @@ package com.wangyz.lib.inspector
 import android.app.Application
 import android.content.Context
 import androidx.annotation.MainThread
+import com.wangyz.lib.config.ConfigLoader
+import com.wangyz.lib.config.IConfig
+import com.wangyz.lib.config.IConfigLoader
 import com.wangyz.lib.lifecycle.InspectorLifecycle
 import com.wangyz.lib.util.LogUtils
 
@@ -38,15 +41,30 @@ class Inspector {
 
     private val lifecycle = InspectorLifecycle()
 
+    private val configLoader by lazy {
+        ConfigLoader()
+    }
+
+    private var config: IConfig? = null
+
     @MainThread
     fun create(context: Context) {
+        loadConfig()
+        
         application = context.applicationContext as Application
         lifecycle.register(application)
+
         LogUtils.i("Inspector create")
     }
 
     @MainThread
     fun destroy() {
         lifecycle.unRegister(application)
+    }
+
+    fun getConfig() = config
+
+    private fun loadConfig() {
+        config = configLoader.loadConfig()
     }
 }

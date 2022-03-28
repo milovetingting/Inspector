@@ -9,10 +9,12 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.widget.NestedScrollView
 import com.wangyz.lib.R
+import com.wangyz.lib.config.Config
 import com.wangyz.lib.delegate.AccessibilityDelegate
 import com.wangyz.lib.dialog.EventDialog
 import com.wangyz.lib.ext.simpleId
 import com.wangyz.lib.hierarchy.ViewHierarchy
+import com.wangyz.lib.inspector.Inspector
 import com.wangyz.lib.util.LogUtils
 
 
@@ -41,15 +43,31 @@ class InspectorLifecycleState(private val activity: Activity) {
 
     private lateinit var anchorView: View
 
+    private val events by lazy {
+        mutableListOf<Config.TrackConfig>()
+    }
+
     private val dialog by lazy {
         EventDialog(activity, submitCallback = { id, name ->
             LogUtils.i("id:$id,name:$name")
+            val config = Config.TrackConfig(
+                id,
+                name,
+                anchorView.simpleId.toString(),
+                activity.javaClass.name
+            )
+            events.add(config)
+            Inspector.getInstance().getConfig()?.apply {
+                (this as Config).configs.add(config)
+            }
             anchorView.setTag(anchorView.simpleId, "")
             addFlag(anchorView)
         }, closeCallback = {
             LogUtils.i("close")
         })
     }
+
+    private var inited = false
 
     private val scrollChangeListener by lazy {
         (View.OnScrollChangeListener { p0, p1, p2, p3, p4 ->
@@ -92,6 +110,16 @@ class InspectorLifecycleState(private val activity: Activity) {
 
     private fun hasEvent(view: View?): Boolean = view?.getTag(view.simpleId) != null
 
+    private fun initFlag() {
+        Inspector.getInstance().getConfig()?.apply {
+            (this as Config).configs.filter { it.page == activity.javaClass.name }.forEach { it ->
+                views.firstOrNull { view -> view.simpleId.toString() == it.anchor }?.apply {
+                    addFlag(this)
+                }
+            }
+        }
+    }
+
     private fun addFlag(anchorView: View) {
         val anchorRect = Rect()
         val rootViewRect = Rect()
@@ -130,11 +158,17 @@ class InspectorLifecycleState(private val activity: Activity) {
 
     fun onResume() {
 
+        if (!inited) {
+            initFlag()
+            inited = true
+        }
+
         views.forEach { view ->
             setAccessibilityDelegate(view)
         }
 
         scrollView?.setOnScrollChangeListener(scrollChangeListener)
+
     }
 
     fun onPause() {
