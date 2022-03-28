@@ -75,6 +75,10 @@ internal class InspectorLifecycle {
             STATE_PAUSE -> {
                 inspectorLifecycleState?.onPause()
             }
+            STATE_DESTROY -> {
+                inspectorLifecycleState = null
+                currentActivity = null
+            }
         }
 
     }
