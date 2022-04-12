@@ -8,7 +8,7 @@ import com.wangyz.lib.R
 
 
 /**
- * 类描述：
+ * 类描述：浮窗
  * 创建人：wangyuanzhi
  * 创建时间：2022/3/28 3:35 下午
  * 修改人：wangyuanzhi

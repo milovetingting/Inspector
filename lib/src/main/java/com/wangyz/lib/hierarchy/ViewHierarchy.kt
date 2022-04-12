@@ -5,6 +5,9 @@ import android.view.ViewGroup
 import android.view.ViewParent
 
 
+/**
+ * View的层级结构工具类
+ */
 object ViewHierarchy {
 
     /**

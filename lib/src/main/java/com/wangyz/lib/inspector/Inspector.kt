@@ -5,13 +5,12 @@ import android.content.Context
 import androidx.annotation.MainThread
 import com.wangyz.lib.config.ConfigLoader
 import com.wangyz.lib.config.IConfig
-import com.wangyz.lib.config.IConfigLoader
 import com.wangyz.lib.lifecycle.InspectorLifecycle
 import com.wangyz.lib.util.LogUtils
 
 
 /**
- * 类描述：
+ * 类描述：Inspector
  * 创建人：wangyuanzhi
  * 创建时间：2022/3/26 8:53 上午
  * 修改人：wangyuanzhi
@@ -50,7 +49,7 @@ class Inspector {
     @MainThread
     fun create(context: Context) {
         loadConfig()
-        
+
         application = context.applicationContext as Application
         lifecycle.register(application)
 

@@ -21,7 +21,7 @@ import com.wangyz.lib.window.FloatWindow
 
 
 /**
- * 类描述：
+ * 类描述：页面状态管理
  * 创建人：wangyuanzhi
  * 创建时间：2022/3/26 9:27 上午
  * 修改人：wangyuanzhi

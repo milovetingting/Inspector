@@ -10,7 +10,7 @@ import com.wangyz.lib.R
 
 
 /**
- * 类描述：
+ * 类描述：增加事件的弹窗
  * 创建人：wangyuanzhi
  * 创建时间：2022/3/26 8:39 上午
  * 修改人：wangyuanzhi

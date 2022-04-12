@@ -2,7 +2,7 @@ package com.wangyz.lib.config
 
 
 /**
- * 类描述：
+ * 类描述：配置类接口
  * 创建人：wangyuanzhi
  * 创建时间：2022/3/28 11:50 上午
  * 修改人：wangyuanzhi

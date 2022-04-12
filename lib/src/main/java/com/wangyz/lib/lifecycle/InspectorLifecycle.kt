@@ -8,7 +8,7 @@ import com.wangyz.lib.state.InspectorLifecycleState
 
 
 /**
- * 类描述：
+ * 类描述：生命周期
  * 创建人：wangyuanzhi
  * 创建时间：2022/3/26 9:01 上午
  * 修改人：wangyuanzhi
