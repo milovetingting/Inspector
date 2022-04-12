@@ -65,12 +65,12 @@ internal class InspectorLifecycle {
 
         if (currentActivity != newActivity) {
             currentActivity = newActivity
-            inspectorLifecycleState = InspectorLifecycleState(currentActivity!!)
         }
 
         when (state) {
             STATE_CREATE -> {
                 inspectorLifecycleState?.onCreate()
+                inspectorLifecycleState = InspectorLifecycleState(currentActivity!!)
             }
             STATE_RESUME -> {
                 inspectorLifecycleState?.onResume()

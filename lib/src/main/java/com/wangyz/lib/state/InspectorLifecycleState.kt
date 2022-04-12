@@ -4,6 +4,7 @@ import android.app.Activity
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
@@ -16,6 +17,8 @@ import com.wangyz.lib.dialog.EventDialog
 import com.wangyz.lib.ext.simpleId
 import com.wangyz.lib.hierarchy.ViewHierarchy
 import com.wangyz.lib.inspector.Inspector
+import com.wangyz.lib.proxy.ProxyHandler
+import com.wangyz.lib.util.HookHelper
 import com.wangyz.lib.util.LogUtils
 import com.wangyz.lib.window.FloatWindow
 
@@ -31,6 +34,8 @@ import com.wangyz.lib.window.FloatWindow
  */
 class InspectorLifecycleState(private val activity: Activity) {
 
+    private val proxyHandlerMap = mutableMapOf<View, ProxyHandler?>()
+
     private val rootView by lazy {
         activity.window.decorView.findViewById<View>(android.R.id.content) as ViewGroup
     }
@@ -43,7 +48,7 @@ class InspectorLifecycleState(private val activity: Activity) {
         views.filterIsInstance<NestedScrollView>().firstOrNull()
     }
 
-    private lateinit var anchorView: View
+    private var anchorView: View? = null
 
     private val events by lazy {
         mutableListOf<Config.TrackConfig>()
@@ -51,22 +56,28 @@ class InspectorLifecycleState(private val activity: Activity) {
 
     private val dialog by lazy {
         EventDialog(activity, submitCallback = { id, name ->
-            LogUtils.i("id:$id,name:$name")
-            val config = Config.TrackConfig(
-                id,
-                name,
-                anchorView.simpleId.toString(),
-                activity.javaClass.name
-            )
-            events.add(config)
-            Inspector.getInstance().getConfig()?.apply {
-                (this as Config).configs.add(config)
+            anchorView?.apply {
+                LogUtils.i("id:$id,name:$name")
+                val config = Config.TrackConfig(
+                    id,
+                    name,
+                    this.simpleId.toString(),
+                    activity.javaClass.name
+                )
+                events.add(config)
+                Inspector.getInstance().getConfig()?.apply {
+                    (this as Config).configs.add(config)
+                }
+                this.setTag(this.simpleId, "")
+                addFlag(this)
             }
-            anchorView.setTag(anchorView.simpleId, "")
-            addFlag(anchorView)
         }, closeCallback = {
             LogUtils.i("close")
+            anchorView?.apply {
+                proxyHandlerMap[anchorView]?.onClickListener?.onClick(anchorView)
+            }
         })
+
     }
 
     private var inited = false
@@ -85,28 +96,29 @@ class InspectorLifecycleState(private val activity: Activity) {
         })
     }
 
-    private fun setAccessibilityDelegate(view: View?) {
+    private fun setProxyOnclickListener(view: View?) {
         view?.apply {
-            accessibilityDelegate = AccessibilityDelegate(accessibilityDelegate) {
-                LogUtils.i("${this.simpleId} accessibilityDelegate-->click")
-                if (!hasEvent(it)) {
+            val proxyHandler = ProxyHandler() {
+                LogUtils.i("click")
+                if (!hasEvent(view)) {
                     LogUtils.i("准备注册事件")
-                    anchorView = it!!
+                    anchorView = view
                     showDialog()
                 } else {
                     LogUtils.i("已经注册事件")
                     Toast.makeText(activity, "已经注册事件", Toast.LENGTH_SHORT).show()
+                    anchorView = view
+                    proxyHandlerMap[anchorView]?.onClickListener?.onClick(anchorView)
                 }
             }
+            HookHelper.hook(view, proxyHandler)
+            proxyHandlerMap[view] = proxyHandler
         }
     }
 
-    private fun resetAccessibilityDelegate(view: View?) {
+    private fun resetOnclickListener(view: View?) {
         view?.apply {
-            if (accessibilityDelegate is AccessibilityDelegate) {
-                accessibilityDelegate =
-                    (accessibilityDelegate as AccessibilityDelegate).originDelegate
-            }
+
         }
     }
 
@@ -146,14 +158,6 @@ class InspectorLifecycleState(private val activity: Activity) {
         imageView.y = (anchorRect.top - rootViewRect.top).toFloat()
     }
 
-    private fun removeFlags() {
-        val flags = views.filter { view -> view.tag is Pair<*, *> }
-        flags.forEach { view ->
-            rootView.removeView(view)
-            views.remove(view)
-        }
-    }
-
     private fun showDialog() {
         dialog.show()
     }
@@ -169,24 +173,21 @@ class InspectorLifecycleState(private val activity: Activity) {
     }
 
     fun onResume() {
-
         if (!inited) {
             initFlag()
             inited = true
         }
 
         views.forEach { view ->
-            setAccessibilityDelegate(view)
+            setProxyOnclickListener(view)
         }
-
         scrollView?.setOnScrollChangeListener(scrollChangeListener)
-
     }
 
     fun onPause() {
 
         views.forEach { view ->
-            resetAccessibilityDelegate(view)
+            resetOnclickListener(view)
         }
 
     }
