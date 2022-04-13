@@ -3,7 +3,6 @@ package com.wangyz.lib.window
 import android.app.Activity
 import android.view.*
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.widget.ImageView
 import com.wangyz.lib.R
 
 
@@ -23,7 +22,7 @@ class FloatWindow() {
             //设置大小 自适应
             width = WRAP_CONTENT
             height = WRAP_CONTENT
-            gravity = Gravity.LEFT or Gravity.TOP
+            gravity = Gravity.LEFT or Gravity.CENTER_VERTICAL
             flags =
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         }

@@ -97,8 +97,8 @@ class InspectorLifecycleState(private val activity: Activity) {
         })
     }
 
-    private fun setProxyOnclickListener(view: View?) {
-        view?.apply {
+    private fun setProxyOnclickListener() {
+        views.forEach { view ->
             val proxyHandler = ProxyHandler() {
                 LogUtils.i("click")
                 if (!hasEvent(view)) {
@@ -116,9 +116,11 @@ class InspectorLifecycleState(private val activity: Activity) {
         }
     }
 
-    private fun resetOnclickListener(view: View) {
-        proxyHandlerMap[view]?.onClickListener?.apply {
-            HookHelper.resetOnclickListener(view, this)
+    private fun resetOnclickListener() {
+        views.forEach { view ->
+            proxyHandlerMap[view]?.onClickListener?.apply {
+                HookHelper.resetOnclickListener(view, this)
+            }
         }
     }
 
@@ -170,10 +172,6 @@ class InspectorLifecycleState(private val activity: Activity) {
     }
 
     fun onResume() {
-        if (!inited) {
-            initFlag()
-            inited = true
-        }
         floatWindow = FloatWindow().setupWindow(activity) {
             CommitDialog(activity, commitCallback = {
                 ConfigManager(activity).commitConfig(config)
@@ -181,17 +179,22 @@ class InspectorLifecycleState(private val activity: Activity) {
 
             }).show()
         }
-        views.forEach { view ->
-            setProxyOnclickListener(view)
+
+        if (!inited) {
+            initFlag()
+            inited = true
         }
+
+        setProxyOnclickListener()
+
         scrollView?.setOnScrollChangeListener(scrollChangeListener)
     }
 
     fun onPause() {
-        activity.window.windowManager.removeView(floatWindow)
-        views.forEach { view ->
-            resetOnclickListener(view)
+        floatWindow?.apply {
+            activity.window.windowManager.removeView(this)
         }
+        resetOnclickListener()
     }
 
     fun onDestroy() {
