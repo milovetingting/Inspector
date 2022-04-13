@@ -4,19 +4,16 @@ import android.app.Activity
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.core.widget.NestedScrollView
 import com.wangyz.lib.R
 import com.wangyz.lib.config.Config
-import com.wangyz.lib.delegate.AccessibilityDelegate
+import com.wangyz.lib.config.ConfigManager
 import com.wangyz.lib.dialog.CommitDialog
 import com.wangyz.lib.dialog.EventDialog
 import com.wangyz.lib.ext.simpleId
 import com.wangyz.lib.hierarchy.ViewHierarchy
-import com.wangyz.lib.inspector.Inspector
 import com.wangyz.lib.proxy.ProxyHandler
 import com.wangyz.lib.util.HookHelper
 import com.wangyz.lib.util.LogUtils
@@ -34,6 +31,10 @@ import com.wangyz.lib.window.FloatWindow
  */
 class InspectorLifecycleState(private val activity: Activity) {
 
+    private val config by lazy {
+        ConfigManager(activity).loadConfig()
+    }
+
     private val proxyHandlerMap = mutableMapOf<View, ProxyHandler?>()
 
     private val rootView by lazy {
@@ -50,25 +51,21 @@ class InspectorLifecycleState(private val activity: Activity) {
 
     private var anchorView: View? = null
 
-    private val events by lazy {
-        mutableListOf<Config.TrackConfig>()
-    }
+    private var floatWindow: View? = null
 
     private val dialog by lazy {
         EventDialog(activity, submitCallback = { id, name ->
             anchorView?.apply {
                 LogUtils.i("id:$id,name:$name")
-                val config = Config.TrackConfig(
-                    id,
-                    name,
-                    this.simpleId.toString(),
-                    activity.javaClass.name
+                config.configs.add(
+                    Config.TrackConfig(
+                        id,
+                        name,
+                        this.simpleId.toString(),
+                        activity.javaClass.name
+                    )
                 )
-                events.add(config)
-                Inspector.getInstance().getConfig()?.apply {
-                    (this as Config).configs.add(config)
-                }
-                this.setTag(this.simpleId, "")
+                saveConfig()
                 addFlag(this)
             }
         }, closeCallback = {
@@ -77,7 +74,6 @@ class InspectorLifecycleState(private val activity: Activity) {
                 proxyHandlerMap[anchorView]?.onClickListener?.onClick(anchorView)
             }
         })
-
     }
 
     private var inited = false
@@ -106,7 +102,6 @@ class InspectorLifecycleState(private val activity: Activity) {
                     showDialog()
                 } else {
                     LogUtils.i("已经注册事件")
-                    Toast.makeText(activity, "已经注册事件", Toast.LENGTH_SHORT).show()
                     anchorView = view
                     proxyHandlerMap[anchorView]?.onClickListener?.onClick(anchorView)
                 }
@@ -116,20 +111,18 @@ class InspectorLifecycleState(private val activity: Activity) {
         }
     }
 
-    private fun resetOnclickListener(view: View?) {
-        view?.apply {
-
+    private fun resetOnclickListener(view: View) {
+        proxyHandlerMap[view]?.onClickListener?.apply {
+            HookHelper.resetOnclickListener(view, this)
         }
     }
 
     private fun hasEvent(view: View?): Boolean = view?.getTag(view.simpleId) != null
 
     private fun initFlag() {
-        Inspector.getInstance().getConfig()?.apply {
-            (this as Config).configs.filter { it.page == activity.javaClass.name }.forEach { it ->
-                views.firstOrNull { view -> view.simpleId.toString() == it.anchor }?.apply {
-                    addFlag(this)
-                }
+        config.configs.filter { it.page == activity.javaClass.name }.forEach { it ->
+            views.firstOrNull { view -> view.simpleId.toString() == it.anchor }?.apply {
+                addFlag(this)
             }
         }
     }
@@ -156,6 +149,8 @@ class InspectorLifecycleState(private val activity: Activity) {
         // 设置左上角显示
         imageView.x = (anchorRect.left).toFloat()
         imageView.y = (anchorRect.top - rootViewRect.top).toFloat()
+
+        anchorView.setTag(anchorView.simpleId, "")
     }
 
     private fun showDialog() {
@@ -163,13 +158,7 @@ class InspectorLifecycleState(private val activity: Activity) {
     }
 
     fun onCreate() {
-        FloatWindow().setupWindow(activity) {
-            CommitDialog(activity, commitCallback = {
-                Toast.makeText(activity, "提交", Toast.LENGTH_SHORT).show()
-            }, closeCallback = {
 
-            }).show()
-        }
     }
 
     fun onResume() {
@@ -177,7 +166,13 @@ class InspectorLifecycleState(private val activity: Activity) {
             initFlag()
             inited = true
         }
+        floatWindow = FloatWindow().setupWindow(activity) {
+            CommitDialog(activity, commitCallback = {
+                ConfigManager(activity).commitConfig(config)
+            }, closeCallback = {
 
+            }).show()
+        }
         views.forEach { view ->
             setProxyOnclickListener(view)
         }
@@ -185,10 +180,17 @@ class InspectorLifecycleState(private val activity: Activity) {
     }
 
     fun onPause() {
-
+        activity.window.windowManager.removeView(floatWindow)
         views.forEach { view ->
             resetOnclickListener(view)
         }
+    }
 
+    fun onDestroy() {
+
+    }
+
+    private fun saveConfig() {
+        ConfigManager(activity).saveToLocal(config)
     }
 }

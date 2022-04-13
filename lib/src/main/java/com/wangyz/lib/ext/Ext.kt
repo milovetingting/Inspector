@@ -1,6 +1,7 @@
 package com.wangyz.lib.ext
 
 import android.view.View
+import com.wangyz.lib.hierarchy.ViewHierarchy
 
 
 /**
@@ -31,4 +32,6 @@ val Any?.simpleName: String
  * 获取简短id
  */
 val View.simpleId: Int
-    get() = "${this.simpleName}_${this.left}_${this.top}_${this.right}_${this.bottom}".hashCode()
+    get() = "${ViewHierarchy.getHierarchy(this).map { it.simpleName }.joinToString("/")}@${
+        ViewHierarchy.getIndexAtParent(this)
+    }".hashCode()

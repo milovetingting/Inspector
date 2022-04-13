@@ -18,7 +18,7 @@ import com.wangyz.lib.R
  */
 class FloatWindow() {
 
-    fun setupWindow(activity: Activity, callback: () -> Unit) {
+    fun setupWindow(activity: Activity, callback: () -> Unit): View {
         var layoutParam = WindowManager.LayoutParams().apply {
             //设置大小 自适应
             width = WRAP_CONTENT
@@ -41,6 +41,7 @@ class FloatWindow() {
         )
         // 将悬浮窗控件添加到WindowManager
         activity.window.windowManager.addView(floatRootView, layoutParam)
+        return floatRootView
     }
 
     class ItemViewTouchListener(

@@ -27,7 +27,7 @@ internal class InspectorLifecycle {
 
     private var currentActivity: Activity? = null
 
-    private var inspectorLifecycleState: InspectorLifecycleState? = null
+    private val stateMap = mutableMapOf<Activity, InspectorLifecycleState?>()
 
     fun register(application: Application) {
         application.registerActivityLifecycleCallbacks(activityLifecycle)
@@ -65,21 +65,24 @@ internal class InspectorLifecycle {
 
         if (currentActivity != newActivity) {
             currentActivity = newActivity
+            if (stateMap[currentActivity!!] == null) {
+                stateMap[currentActivity!!] = InspectorLifecycleState(currentActivity!!)
+            }
         }
 
         when (state) {
             STATE_CREATE -> {
-                inspectorLifecycleState?.onCreate()
-                inspectorLifecycleState = InspectorLifecycleState(currentActivity!!)
+                stateMap[currentActivity]?.onCreate()
             }
             STATE_RESUME -> {
-                inspectorLifecycleState?.onResume()
+                stateMap[currentActivity]?.onResume()
             }
             STATE_PAUSE -> {
-                inspectorLifecycleState?.onPause()
+                stateMap[currentActivity]?.onPause()
             }
             STATE_DESTROY -> {
-                inspectorLifecycleState = null
+                stateMap[currentActivity]?.onDestroy()
+                stateMap[currentActivity!!] = null
                 currentActivity = null
             }
         }

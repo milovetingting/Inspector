@@ -39,5 +39,13 @@ object ViewHierarchy {
         return children
     }
 
+    /**
+     * 获取view在父view中的索引
+     */
+    fun getIndexAtParent(view: View): Int {
+        var parent: ViewParent? = view.parent
+        return (parent as ViewGroup).indexOfChild(view)
+    }
+
 
 }
