@@ -14,16 +14,10 @@ data class Config(
     var configs: MutableList<TrackConfig>
 ) : IConfig {
 
-    companion object {
-        const val STATUS_OLD = 1
-        const val STATUS_NEW = 2
-    }
-
     data class TrackConfig(
         var eventId: String,
         var eventName: String,
         var anchor: String,
-        var page: String,
-        var status: Int = STATUS_NEW
+        var page: String
     )
 }

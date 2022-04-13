@@ -35,6 +35,10 @@ class InspectorLifecycleState(private val activity: Activity) {
         ConfigManager(activity).loadConfig()
     }
 
+    private val tempConfig by lazy {
+        ConfigManager(activity).loadTempConfig()
+    }
+
     private val proxyHandlerMap = mutableMapOf<View, ProxyHandler?>()
 
     private val rootView by lazy {
@@ -57,15 +61,16 @@ class InspectorLifecycleState(private val activity: Activity) {
         EventDialog(activity, submitCallback = { id, name ->
             anchorView?.apply {
                 LogUtils.i("id:$id,name:$name")
-                config.configs.add(
-                    Config.TrackConfig(
-                        id,
-                        name,
-                        this.simpleId.toString(),
-                        activity.javaClass.name
-                    )
+                val bean = Config.TrackConfig(
+                    id,
+                    name,
+                    this.simpleId.toString(),
+                    activity.javaClass.name
                 )
+                config.configs.add(bean)
+                tempConfig.configs.add(bean)
                 saveConfig()
+                saveTempConfig()
                 addFlag(this)
             }
         }, closeCallback = {
@@ -124,6 +129,9 @@ class InspectorLifecycleState(private val activity: Activity) {
             views.firstOrNull { view -> view.simpleId.toString() == it.anchor }?.apply {
                 addFlag(this)
             }
+        }
+        tempConfig.configs.forEach {
+            LogUtils.i(it.toString())
         }
     }
 
@@ -192,5 +200,9 @@ class InspectorLifecycleState(private val activity: Activity) {
 
     private fun saveConfig() {
         ConfigManager(activity).saveToLocal(config)
+    }
+
+    private fun saveTempConfig() {
+        ConfigManager(activity).saveTempConfig(tempConfig)
     }
 }

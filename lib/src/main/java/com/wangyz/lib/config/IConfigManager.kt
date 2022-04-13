@@ -17,9 +17,19 @@ interface IConfigManager<T : IConfig> {
     fun loadConfig(): T
 
     /**
+     * 加载临时配置
+     */
+    fun loadTempConfig(): T
+
+    /**
      * 保存到本地
      */
     fun saveToLocal(config: T)
+
+    /**
+     * 保存临时配置
+     */
+    fun saveTempConfig(config: T)
 
     /**
      * 提交配置
