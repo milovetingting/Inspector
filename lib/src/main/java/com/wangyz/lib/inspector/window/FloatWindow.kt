@@ -1,4 +1,4 @@
-package com.wangyz.lib.window
+package com.wangyz.lib.inspector.window
 
 import android.app.Activity
 import android.view.*

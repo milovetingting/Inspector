@@ -1,33 +1,33 @@
-package com.wangyz.lib.inspector
+package com.wangyz.lib.tracker
 
 import android.app.Application
 import android.content.Context
 import androidx.annotation.MainThread
 import com.wangyz.lib.config.ConfigManager
-import com.wangyz.lib.inspector.lifecycle.InspectorLifecycle
+import com.wangyz.lib.tracker.lifecycle.TrackerLifecycle
 import com.wangyz.lib.util.LogUtils
 
 
 /**
- * 类描述：Inspector
+ * 类描述：Tracker
  * 创建人：wangyuanzhi
- * 创建时间：2022/3/26 8:53 上午
+ * 创建时间：2022/4/14 7:27 下午
  * 修改人：wangyuanzhi
- * 修改时间：2022/3/26 8:53 上午
+ * 修改时间：2022/4/14 7:27 下午
  * 修改备注：
  * @version
  */
-class Inspector {
+class Tracker {
 
     companion object {
 
-        private var INSTANCE: Inspector? = null
+        private var INSTANCE: Tracker? = null
 
-        fun getInstance(): Inspector {
+        fun getInstance(): Tracker {
             if (INSTANCE == null) {
-                synchronized(Inspector::class.java) {
+                synchronized(Tracker::class.java) {
                     if (INSTANCE == null) {
-                        INSTANCE = Inspector()
+                        INSTANCE = Tracker()
                     }
                 }
             }
@@ -37,7 +37,7 @@ class Inspector {
 
     private lateinit var application: Application
 
-    private val lifecycle = InspectorLifecycle()
+    private val lifecycle = TrackerLifecycle()
 
     @MainThread
     fun create(context: Context) {

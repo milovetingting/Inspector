@@ -1,4 +1,4 @@
-package com.wangyz.lib.proxy
+package com.wangyz.lib.inspector.proxy
 
 import android.view.View
 import com.wangyz.lib.util.LogUtils

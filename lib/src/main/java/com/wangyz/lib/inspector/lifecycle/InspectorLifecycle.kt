@@ -1,11 +1,11 @@
-package com.wangyz.lib.lifecycle
+package com.wangyz.lib.inspector.lifecycle
 
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import androidx.annotation.MainThread
 import androidx.fragment.app.FragmentActivity
-import com.wangyz.lib.state.InspectorLifecycleState
+import com.wangyz.lib.inspector.state.InspectorLifecycleState
 
 
 /**

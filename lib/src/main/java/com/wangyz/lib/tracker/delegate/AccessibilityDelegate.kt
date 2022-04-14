@@ -1,4 +1,4 @@
-package com.wangyz.lib.delegate
+package com.wangyz.lib.tracker.delegate
 
 import android.view.View
 import android.view.accessibility.AccessibilityEvent

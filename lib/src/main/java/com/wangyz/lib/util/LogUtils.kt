@@ -1,7 +1,7 @@
 package com.wangyz.lib.util
 
 import android.util.Log
-import com.wangyz.lib.Constants
+import com.wangyz.lib.constant.Constants
 
 
 /**

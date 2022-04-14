@@ -1,8 +1,8 @@
 package com.wangyz.lib.util
 
 import android.view.View
-import com.wangyz.lib.proxy.ProxyHandler
-import com.wangyz.lib.proxy.ProxyOnClickListener
+import com.wangyz.lib.inspector.proxy.ProxyHandler
+import com.wangyz.lib.inspector.proxy.ProxyOnClickListener
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 

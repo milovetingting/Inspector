@@ -4,7 +4,7 @@ import android.view.View
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import com.wangyz.lib.hierarchy.ViewHierarchy
+import com.wangyz.lib.util.ViewHierarchy
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
 

@@ -1,4 +1,4 @@
-package com.wangyz.lib.dialog
+package com.wangyz.lib.inspector.dialog
 
 import android.app.Activity
 import android.app.Dialog

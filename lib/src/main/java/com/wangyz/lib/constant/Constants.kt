@@ -1,4 +1,4 @@
-package com.wangyz.lib
+package com.wangyz.lib.constant
 
 
 /**

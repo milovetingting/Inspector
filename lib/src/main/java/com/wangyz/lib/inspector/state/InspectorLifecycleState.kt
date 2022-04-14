@@ -1,4 +1,4 @@
-package com.wangyz.lib.state
+package com.wangyz.lib.inspector.state
 
 import android.graphics.Rect
 import android.view.View
@@ -11,15 +11,15 @@ import androidx.fragment.app.FragmentActivity
 import com.wangyz.lib.R
 import com.wangyz.lib.config.Config
 import com.wangyz.lib.config.ConfigManager
-import com.wangyz.lib.dialog.CommitDialog
-import com.wangyz.lib.dialog.EventDialog
+import com.wangyz.lib.inspector.dialog.CommitDialog
+import com.wangyz.lib.inspector.dialog.EventDialog
 import com.wangyz.lib.ext.simpleId
 import com.wangyz.lib.ext.viewHierarchy
-import com.wangyz.lib.hierarchy.ViewHierarchy
-import com.wangyz.lib.proxy.ProxyHandler
+import com.wangyz.lib.util.ViewHierarchy
+import com.wangyz.lib.inspector.proxy.ProxyHandler
 import com.wangyz.lib.util.HookHelper
 import com.wangyz.lib.util.LogUtils
-import com.wangyz.lib.window.FloatWindow
+import com.wangyz.lib.inspector.window.FloatWindow
 
 
 /**
