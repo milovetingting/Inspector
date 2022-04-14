@@ -142,6 +142,7 @@ class ConfigManager : IConfigManager<Config> {
     private fun doLoadRemoteConfig(context: Context): Config {
         LogUtils.i("获取远程配置")
         val config = Config(mutableListOf())
+        //todo 从远程下载最新配置,此处先模拟
         val file = File(context.filesDir, "configs.json")
         if (file.exists()) {
             val configs = file.readText()
@@ -156,21 +157,33 @@ class ConfigManager : IConfigManager<Config> {
             }
             //复制一份到本地
             file.copyTo(File(context.filesDir, "local_configs.json"), true)
+        } else {
+            file.createNewFile()
         }
         return config
     }
 
     private fun doLoadLocalConfig(context: Context): Config {
         LogUtils.i("获取本地配置")
-        val config = Config(mutableListOf())
-        val file = File(context.filesDir, "local_configs.json")
-        if (file.exists()) {
-            val configs = file.readText()
-            val list =
-                gson.fromJson(configs, Array<Config.TrackConfig>::class.java).toMutableList()
-            config.configs = list
+        val remoteConfig = File(context.filesDir, "configs.json")
+        var count = 0
+        while (!remoteConfig.exists() && count < 5) {
+            Thread.sleep(1000)
+            count++
         }
-        return config
+        return if (!remoteConfig.exists()) {
+            doLoadRemoteConfig(context)
+        } else {
+            val config = Config(mutableListOf())
+            val file = File(context.filesDir, "local_configs.json")
+            if (file.exists()) {
+                val configs = file.readText()
+                val list =
+                    gson.fromJson(configs, Array<Config.TrackConfig>::class.java).toMutableList()
+                config.configs = list
+            }
+            config
+        }
     }
 
     private fun doLoadTempConfig(context: Context): Config {
@@ -201,6 +214,11 @@ class ConfigManager : IConfigManager<Config> {
         val configs = gson.toJson(config.configs)
         val file = File(context.filesDir, "local_configs.json")
         file.writeText(configs)
+        val remoteConfig = File(context.filesDir, "configs.json")
+        if (!remoteConfig.exists()) {
+            remoteConfig.createNewFile()
+        }
+        file.copyTo(remoteConfig, true)
         return true
     }
 

@@ -3,8 +3,10 @@ package com.wangyz.lib.tracker
 import android.app.Application
 import android.content.Context
 import androidx.annotation.MainThread
+import com.wangyz.lib.config.Config
 import com.wangyz.lib.config.ConfigManager
 import com.wangyz.lib.tracker.lifecycle.TrackerLifecycle
+import com.wangyz.lib.tracker.report.IReportHandler
 import com.wangyz.lib.util.LogUtils
 
 
@@ -39,9 +41,13 @@ class Tracker {
 
     private val lifecycle = TrackerLifecycle()
 
+    private var reportHandler: IReportHandler? = null
+
     @MainThread
-    fun create(context: Context) {
-        LogUtils.i("Inspector create")
+    fun create(context: Context, reportHandler: IReportHandler?) {
+        LogUtils.i("Tracker create")
+
+        this.reportHandler = reportHandler
 
         application = context.applicationContext as Application
         lifecycle.register(application)
@@ -52,5 +58,9 @@ class Tracker {
     @MainThread
     fun destroy() {
         lifecycle.unRegister(application)
+    }
+
+    fun report(event: Config.TrackConfig) {
+        reportHandler?.report(event)
     }
 }

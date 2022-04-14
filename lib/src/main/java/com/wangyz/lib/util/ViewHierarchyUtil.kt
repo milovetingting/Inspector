@@ -8,7 +8,7 @@ import android.view.ViewParent
 /**
  * View的层级结构工具类
  */
-object ViewHierarchy {
+object ViewHierarchyUtil {
 
     /**
      * 获取层级关系列表

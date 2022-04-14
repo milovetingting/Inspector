@@ -5,7 +5,7 @@ import android.app.Application
 import android.os.Bundle
 import androidx.annotation.MainThread
 import androidx.fragment.app.FragmentActivity
-import com.wangyz.lib.inspector.state.InspectorLifecycleState
+import com.wangyz.lib.tracker.state.TrackerLifecycleState
 
 
 /**
@@ -28,7 +28,7 @@ internal class TrackerLifecycle {
 
     private var currentActivity: Activity? = null
 
-    private val stateMap = mutableMapOf<Activity, InspectorLifecycleState?>()
+    private val stateMap = mutableMapOf<Activity, TrackerLifecycleState?>()
 
     fun register(application: Application) {
         application.registerActivityLifecycleCallbacks(activityLifecycle)
@@ -69,7 +69,7 @@ internal class TrackerLifecycle {
                 currentActivity = newActivity
                 if (stateMap[currentActivity!!] == null) {
                     stateMap[currentActivity!!] =
-                        InspectorLifecycleState(currentActivity!! as FragmentActivity)
+                        TrackerLifecycleState(currentActivity!! as FragmentActivity)
                 }
             }
 

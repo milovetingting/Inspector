@@ -1,7 +1,9 @@
 package com.wangyz.inspector
 
 import android.app.Application
+import com.wangyz.inspector.report.ReportHandler
 import com.wangyz.lib.inspector.Inspector
+import com.wangyz.lib.tracker.Tracker
 
 
 /**
@@ -16,6 +18,7 @@ import com.wangyz.lib.inspector.Inspector
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
-        Inspector.getInstance().create(this)
+//        Inspector.getInstance().create(this)
+        Tracker.getInstance().create(this, ReportHandler())
     }
 }

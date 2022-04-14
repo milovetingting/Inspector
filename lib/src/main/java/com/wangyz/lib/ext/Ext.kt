@@ -4,7 +4,7 @@ import android.view.View
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import com.wangyz.lib.util.ViewHierarchy
+import com.wangyz.lib.util.ViewHierarchyUtil
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
 
@@ -37,14 +37,14 @@ val Any?.simpleName: String
  * 获取view的层级
  */
 val View.viewHierarchy: String
-    get() = "${ViewHierarchy.getHierarchy(this).map { it.simpleName }.joinToString("/")}"
+    get() = "${ViewHierarchyUtil.getHierarchy(this).map { it.simpleName }.joinToString("/")}"
 
 /**
  * 获取简短id
  */
 val View.simpleId: Int
-    get() = "${ViewHierarchy.getHierarchy(this).map { it.simpleName }.joinToString("/")}@${
-        ViewHierarchy.getIndexAtParent(this)
+    get() = "${ViewHierarchyUtil.getHierarchy(this).map { it.simpleName }.joinToString("/")}@${
+        ViewHierarchyUtil.getIndexAtParent(this)
     }".hashCode()
 
 

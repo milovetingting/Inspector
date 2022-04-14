@@ -15,7 +15,7 @@ import com.wangyz.lib.inspector.dialog.CommitDialog
 import com.wangyz.lib.inspector.dialog.EventDialog
 import com.wangyz.lib.ext.simpleId
 import com.wangyz.lib.ext.viewHierarchy
-import com.wangyz.lib.util.ViewHierarchy
+import com.wangyz.lib.util.ViewHierarchyUtil
 import com.wangyz.lib.inspector.proxy.ProxyHandler
 import com.wangyz.lib.util.HookHelper
 import com.wangyz.lib.util.LogUtils
@@ -44,7 +44,7 @@ class InspectorLifecycleState(private val activity: FragmentActivity) {
     }
 
     private val views by lazy {
-        ViewHierarchy.getAllChildViews(rootView)
+        ViewHierarchyUtil.getAllChildViews(rootView)
     }
 
     private val scrollView by lazy {
