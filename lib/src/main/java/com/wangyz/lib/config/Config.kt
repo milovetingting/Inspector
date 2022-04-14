@@ -18,6 +18,7 @@ data class Config(
         var eventId: String,
         var eventName: String,
         var anchor: String,
+        var anchorViewHierarchy: String,
         var page: String
     )
 }

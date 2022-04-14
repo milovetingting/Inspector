@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.FragmentActivity
 import com.wangyz.lib.R
@@ -13,6 +14,7 @@ import com.wangyz.lib.config.ConfigManager
 import com.wangyz.lib.dialog.CommitDialog
 import com.wangyz.lib.dialog.EventDialog
 import com.wangyz.lib.ext.simpleId
+import com.wangyz.lib.ext.viewHierarchy
 import com.wangyz.lib.hierarchy.ViewHierarchy
 import com.wangyz.lib.proxy.ProxyHandler
 import com.wangyz.lib.util.HookHelper
@@ -61,6 +63,7 @@ class InspectorLifecycleState(private val activity: FragmentActivity) {
                     id,
                     name,
                     this.simpleId.toString(),
+                    this.viewHierarchy,
                     activity.javaClass.name
                 )
                 config?.configs?.add(bean)
@@ -120,13 +123,20 @@ class InspectorLifecycleState(private val activity: FragmentActivity) {
         }
     }
 
-    private fun hasEvent(view: View?): Boolean = view?.getTag(view.simpleId) != null
+    private fun hasEvent(view: View?): Boolean {
+        var result = false
+        config?.apply {
+            result = configs.count { it.anchor == view?.simpleId.toString() } > 0
+        }
+        return result
+    }
 
     private fun initFlag() {
         config?.configs?.filter { it.page == activity.javaClass.name }?.forEach { it ->
-            views.firstOrNull { view -> view.simpleId.toString() == it.anchor }?.apply {
-                addFlag(this)
-            }
+            views.firstOrNull { view -> view.simpleId.toString() == it.anchor && view.isVisible }
+                ?.apply {
+                    addFlag(this)
+                }
         }
         tempConfig?.configs?.forEach {
             LogUtils.i(it.toString())
@@ -155,8 +165,6 @@ class InspectorLifecycleState(private val activity: FragmentActivity) {
         // 设置左上角显示
         imageView.x = (anchorRect.left).toFloat()
         imageView.y = (anchorRect.top - rootViewRect.top).toFloat()
-
-        anchorView.setTag(anchorView.simpleId, "")
     }
 
     private fun showDialog() {
@@ -175,7 +183,6 @@ class InspectorLifecycleState(private val activity: FragmentActivity) {
 
             }).show()
         }
-
         loadConfig {
             if (!inited) {
                 initFlag()
@@ -199,7 +206,7 @@ class InspectorLifecycleState(private val activity: FragmentActivity) {
 
     private fun loadConfig(callback: () -> Unit) {
         ConfigManager.getInstance()
-            .loadAllConfig(activity, activity, !inited) { localConfig, tempConfig ->
+            .loadAllConfig(activity, activity, true) { localConfig, tempConfig ->
                 this.config = localConfig
                 this.tempConfig = tempConfig
                 callback.invoke()

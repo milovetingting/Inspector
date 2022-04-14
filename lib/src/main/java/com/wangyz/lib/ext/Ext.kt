@@ -34,6 +34,12 @@ val Any?.simpleName: String
         }
 
 /**
+ * 获取view的层级
+ */
+val View.viewHierarchy: String
+    get() = "${ViewHierarchy.getHierarchy(this).map { it.simpleName }.joinToString("/")}"
+
+/**
  * 获取简短id
  */
 val View.simpleId: Int
