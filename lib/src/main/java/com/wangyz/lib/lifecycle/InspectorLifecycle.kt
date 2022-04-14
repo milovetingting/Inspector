@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import androidx.annotation.MainThread
+import androidx.fragment.app.FragmentActivity
 import com.wangyz.lib.state.InspectorLifecycleState
 
 
@@ -63,27 +64,30 @@ internal class InspectorLifecycle {
     @MainThread
     private fun onActivityChanged(newActivity: Activity, state: Int) {
 
-        if (currentActivity != newActivity) {
-            currentActivity = newActivity
-            if (stateMap[currentActivity!!] == null) {
-                stateMap[currentActivity!!] = InspectorLifecycleState(currentActivity!!)
+        if (newActivity is FragmentActivity) {
+            if (currentActivity != newActivity) {
+                currentActivity = newActivity
+                if (stateMap[currentActivity!!] == null) {
+                    stateMap[currentActivity!!] =
+                        InspectorLifecycleState(currentActivity!! as FragmentActivity)
+                }
             }
-        }
 
-        when (state) {
-            STATE_CREATE -> {
-                stateMap[currentActivity]?.onCreate()
-            }
-            STATE_RESUME -> {
-                stateMap[currentActivity]?.onResume()
-            }
-            STATE_PAUSE -> {
-                stateMap[currentActivity]?.onPause()
-            }
-            STATE_DESTROY -> {
-                stateMap[currentActivity]?.onDestroy()
-                stateMap[currentActivity!!] = null
-                currentActivity = null
+            when (state) {
+                STATE_CREATE -> {
+                    stateMap[currentActivity]?.onCreate()
+                }
+                STATE_RESUME -> {
+                    stateMap[currentActivity]?.onResume()
+                }
+                STATE_PAUSE -> {
+                    stateMap[currentActivity]?.onPause()
+                }
+                STATE_DESTROY -> {
+                    stateMap[currentActivity]?.onDestroy()
+                    stateMap[currentActivity!!] = null
+                    currentActivity = null
+                }
             }
         }
 

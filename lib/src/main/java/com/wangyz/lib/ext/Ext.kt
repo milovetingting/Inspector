@@ -1,7 +1,12 @@
 package com.wangyz.lib.ext
 
 import android.view.View
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import com.wangyz.lib.hierarchy.ViewHierarchy
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
 
 
 /**
@@ -35,3 +40,16 @@ val View.simpleId: Int
     get() = "${ViewHierarchy.getHierarchy(this).map { it.simpleName }.joinToString("/")}@${
         ViewHierarchy.getIndexAtParent(this)
     }".hashCode()
+
+
+fun Job.lifeRecycle(lifecycle: Lifecycle?): Job {
+    lifecycle?.addObserver(object : LifecycleEventObserver {
+        override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                cancelChildren()
+                cancel()
+            }
+        }
+    })
+    return this
+}

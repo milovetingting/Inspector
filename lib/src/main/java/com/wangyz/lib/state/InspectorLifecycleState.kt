@@ -1,12 +1,12 @@
 package com.wangyz.lib.state
 
-import android.app.Activity
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.core.widget.NestedScrollView
+import androidx.fragment.app.FragmentActivity
 import com.wangyz.lib.R
 import com.wangyz.lib.config.Config
 import com.wangyz.lib.config.ConfigManager
@@ -29,15 +29,11 @@ import com.wangyz.lib.window.FloatWindow
  * 修改备注：
  * @version
  */
-class InspectorLifecycleState(private val activity: Activity) {
+class InspectorLifecycleState(private val activity: FragmentActivity) {
 
-    private val config by lazy {
-        ConfigManager(activity).loadConfig()
-    }
+    private var config: Config? = null
 
-    private val tempConfig by lazy {
-        ConfigManager(activity).loadTempConfig()
-    }
+    private var tempConfig: Config? = null
 
     private val proxyHandlerMap = mutableMapOf<View, ProxyHandler?>()
 
@@ -67,8 +63,8 @@ class InspectorLifecycleState(private val activity: Activity) {
                     this.simpleId.toString(),
                     activity.javaClass.name
                 )
-                config.configs.add(bean)
-                tempConfig.configs.add(bean)
+                config?.configs?.add(bean)
+                tempConfig?.configs?.add(bean)
                 saveConfig()
                 saveTempConfig()
                 addFlag(this)
@@ -127,12 +123,12 @@ class InspectorLifecycleState(private val activity: Activity) {
     private fun hasEvent(view: View?): Boolean = view?.getTag(view.simpleId) != null
 
     private fun initFlag() {
-        config.configs.filter { it.page == activity.javaClass.name }.forEach { it ->
+        config?.configs?.filter { it.page == activity.javaClass.name }?.forEach { it ->
             views.firstOrNull { view -> view.simpleId.toString() == it.anchor }?.apply {
                 addFlag(this)
             }
         }
-        tempConfig.configs.forEach {
+        tempConfig?.configs?.forEach {
             LogUtils.i(it.toString())
         }
     }
@@ -174,20 +170,20 @@ class InspectorLifecycleState(private val activity: Activity) {
     fun onResume() {
         floatWindow = FloatWindow().setupWindow(activity) {
             CommitDialog(activity, commitCallback = {
-                ConfigManager(activity).commitConfig(config)
+                commitConfig()
             }, closeCallback = {
 
             }).show()
         }
 
-        if (!inited) {
-            initFlag()
-            inited = true
+        loadConfig {
+            if (!inited) {
+                initFlag()
+                inited = true
+            }
+            setProxyOnclickListener()
+            scrollView?.setOnScrollChangeListener(scrollChangeListener)
         }
-
-        setProxyOnclickListener()
-
-        scrollView?.setOnScrollChangeListener(scrollChangeListener)
     }
 
     fun onPause() {
@@ -201,11 +197,31 @@ class InspectorLifecycleState(private val activity: Activity) {
 
     }
 
+    private fun loadConfig(callback: () -> Unit) {
+        ConfigManager.getInstance()
+            .loadAllConfig(activity, activity, !inited) { localConfig, tempConfig ->
+                this.config = localConfig
+                this.tempConfig = tempConfig
+                callback.invoke()
+            }
+    }
+
+
     private fun saveConfig() {
-        ConfigManager(activity).saveToLocal(config)
+        config?.apply {
+            ConfigManager.getInstance().saveToLocal(activity, activity, this)
+        }
     }
 
     private fun saveTempConfig() {
-        ConfigManager(activity).saveTempConfig(tempConfig)
+        tempConfig?.apply {
+            ConfigManager.getInstance().saveTempConfig(activity, activity, this)
+        }
+    }
+
+    private fun commitConfig() {
+        config?.apply {
+            ConfigManager.getInstance().commitConfig(activity, activity, this)
+        }
     }
 }

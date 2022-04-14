@@ -13,5 +13,4 @@ package com.wangyz.lib
 object Constants {
     const val SHOW_LOG = true
     const val TAG = "Layout_Inspector"
-    const val WINDOW_PERMISSION = 0
 }

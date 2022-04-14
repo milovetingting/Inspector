@@ -3,6 +3,7 @@ package com.wangyz.lib.inspector
 import android.app.Application
 import android.content.Context
 import androidx.annotation.MainThread
+import com.wangyz.lib.config.ConfigManager
 import com.wangyz.lib.lifecycle.InspectorLifecycle
 import com.wangyz.lib.util.LogUtils
 
@@ -40,10 +41,12 @@ class Inspector {
 
     @MainThread
     fun create(context: Context) {
+        LogUtils.i("Inspector create")
+
         application = context.applicationContext as Application
         lifecycle.register(application)
 
-        LogUtils.i("Inspector create")
+        ConfigManager.getInstance().loadRemoteConfig(application, null)
     }
 
     @MainThread

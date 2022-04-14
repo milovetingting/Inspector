@@ -1,8 +1,8 @@
 package com.wangyz.inspector.ui
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.FragmentActivity
 import com.wangyz.inspector.R
 
 
@@ -15,7 +15,7 @@ import com.wangyz.inspector.R
  * 修改备注：
  * @version
  */
-class SecondActivity : Activity() {
+class SecondActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_second)
