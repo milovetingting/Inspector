@@ -146,9 +146,12 @@ class ConfigManager : IConfigManager<Config> {
         val file = File(context.filesDir, "configs.json")
         if (file.exists()) {
             val configs = file.readText()
-            val list =
-                gson.fromJson(configs, Array<Config.TrackConfig>::class.java)
+            var list = mutableListOf<Config.TrackConfig>()
+            if (!configs.isNullOrEmpty()) {
+                list = gson.fromJson(configs, Array<Config.TrackConfig>::class.java)
                     .toMutableList()
+            }
+
             config.configs = list
             //先备份原来的文件
             val localFile = File(context.filesDir, "local_configs.json")
