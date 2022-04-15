@@ -88,7 +88,7 @@ class ConfigManager : IConfigManager<Config> {
     ) {
         GlobalScope.launch(Dispatchers.IO) {
             if (delay == true) {
-                delay(1000)
+                delay(500)
             }
             val configs = doLoadAllConfig(context)
             withContext(Dispatchers.Main) {

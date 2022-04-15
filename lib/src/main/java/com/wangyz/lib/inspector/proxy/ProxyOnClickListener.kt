@@ -14,12 +14,12 @@ import com.wangyz.lib.util.LogUtils
  * @version
  */
 class ProxyOnClickListener(
-    private val proxyHandler: ProxyHandler
+    private val click: (View?) -> Unit
 ) :
     View.OnClickListener {
 
     override fun onClick(view: View?) {
         LogUtils.i("hook click")
-        proxyHandler.perform()
+        click.invoke(view)
     }
 }

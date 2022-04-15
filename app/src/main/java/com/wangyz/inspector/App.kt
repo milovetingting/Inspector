@@ -18,7 +18,7 @@ import com.wangyz.lib.tracker.Tracker
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
-        Inspector.getInstance().create(this)
-//        Tracker.getInstance().create(this, ReportHandler())
+//        Inspector.getInstance().create(this)
+        Tracker.getInstance().create(this, ReportHandler())
     }
 }
