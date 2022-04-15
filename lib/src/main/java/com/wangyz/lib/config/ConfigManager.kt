@@ -249,7 +249,22 @@ class ConfigManager : IConfigManager<Config> {
     ): Boolean {
         LogUtils.i("提交并删除临时配置:$config")
         val file = File(context.getExternalFilesDir(null), "temp_configs.json")
-        file.delete()
+        if (file.exists()) {
+            val configs = file.readText()
+            var list: MutableList<Config.TrackConfig>
+            if (!configs.isNullOrEmpty()) {
+                list =
+                    gson.fromJson(configs, Array<Config.TrackConfig>::class.java)
+                        .toMutableList()
+                val exportText = list.map { "${it.eventId},${it.eventName},1" }.joinToString("\n")
+                val exportFile = File(context.getExternalFilesDir(null), "export_configs.txt")
+                if (!exportFile.exists()) {
+                    exportFile.createNewFile()
+                }
+                exportFile.writeText(exportText)
+            }
+            file.delete()
+        }
         return true
     }
 }
