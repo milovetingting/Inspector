@@ -89,6 +89,6 @@ class TrackerLifecycleState(private val activity: FragmentActivity) {
     }
 
     private fun hasEvent(view: View?): Config.TrackConfig? {
-        return config?.configs?.firstOrNull { it.anchor == view?.simpleId.toString() }
+        return config?.configs?.firstOrNull { it.anchor == view?.simpleId.toString() && it.page == activity.javaClass.name }
     }
 }
