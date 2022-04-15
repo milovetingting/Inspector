@@ -20,4 +20,8 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    fun click2(view: View) {
+        Toast.makeText(this, "TextView", Toast.LENGTH_SHORT).show()
+    }
+
 }

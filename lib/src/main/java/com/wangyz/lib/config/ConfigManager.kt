@@ -151,7 +151,6 @@ class ConfigManager : IConfigManager<Config> {
                 list = gson.fromJson(configs, Array<Config.TrackConfig>::class.java)
                     .toMutableList()
             }
-
             config.configs = list
             //先备份原来的文件
             val localFile = File(context.filesDir, "local_configs.json")
@@ -181,8 +180,12 @@ class ConfigManager : IConfigManager<Config> {
             val file = File(context.filesDir, "local_configs.json")
             if (file.exists()) {
                 val configs = file.readText()
-                val list =
-                    gson.fromJson(configs, Array<Config.TrackConfig>::class.java).toMutableList()
+                var list = mutableListOf<Config.TrackConfig>()
+                if (!configs.isNullOrEmpty()) {
+                    list =
+                        gson.fromJson(configs, Array<Config.TrackConfig>::class.java)
+                            .toMutableList()
+                }
                 config.configs = list
             }
             config
@@ -195,8 +198,12 @@ class ConfigManager : IConfigManager<Config> {
         val file = File(context.getExternalFilesDir(null), "temp_configs.json")
         if (file.exists()) {
             val configs = file.readText()
-            val list =
-                gson.fromJson(configs, Array<Config.TrackConfig>::class.java).toMutableList()
+            var list = mutableListOf<Config.TrackConfig>()
+            if (!configs.isNullOrEmpty()) {
+                list =
+                    gson.fromJson(configs, Array<Config.TrackConfig>::class.java)
+                        .toMutableList()
+            }
             config.configs = list
         }
         return config
