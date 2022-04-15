@@ -5,12 +5,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
 import com.wangyz.lib.config.Config
 import com.wangyz.lib.config.ConfigManager
+import com.wangyz.lib.constant.Constants
 import com.wangyz.lib.ext.lifeRecycle
 import com.wangyz.lib.ext.simpleId
 import com.wangyz.lib.ext.viewHierarchy
 import com.wangyz.lib.tracker.Tracker
 import com.wangyz.lib.tracker.delegate.AccessibilityDelegate
 import com.wangyz.lib.util.LogUtils
+import com.wangyz.lib.util.TimeUtil
 import com.wangyz.lib.util.ViewHierarchyUtil
 import kotlinx.coroutines.*
 
@@ -34,6 +36,10 @@ class TrackerLifecycleState(private val activity: FragmentActivity) {
 
     private val views = mutableListOf<View>()
 
+    private var repeatJob: Job? = null
+
+    private var times = 0
+
     fun onCreate() {
 
     }
@@ -41,23 +47,25 @@ class TrackerLifecycleState(private val activity: FragmentActivity) {
     fun onResume() {
         loadConfig {
             initView()
-
-            MainScope().launch {
-                repeat(3) {
+            repeatJob = MainScope().launch {
+                times = 0
+                repeat(Constants.REPEAT_TIMES) {
                     withContext(Dispatchers.IO) {
-                        delay(1000)
+                        times++
+                        delay(TimeUtil.fibonacci(times.toLong()) * 1000)
                         withContext(Dispatchers.Main) {
                             LogUtils.i("重新获取布局")
                             initView()
                         }
                     }
                 }
-            }.lifeRecycle(activity.lifecycle)
+            }
         }
     }
 
     fun onPause() {
         resetAccessibilityDelegate()
+        repeatJob?.cancel()
     }
 
     fun onDestroy() {

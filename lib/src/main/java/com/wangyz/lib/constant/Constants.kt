@@ -13,4 +13,5 @@ package com.wangyz.lib.constant
 object Constants {
     const val SHOW_LOG = true
     const val TAG = "Layout_Inspector"
+    const val REPEAT_TIMES = 10
 }

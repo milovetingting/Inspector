@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentActivity
 import com.wangyz.lib.R
 import com.wangyz.lib.config.Config
 import com.wangyz.lib.config.ConfigManager
+import com.wangyz.lib.constant.Constants
 import com.wangyz.lib.ext.lifeRecycle
 import com.wangyz.lib.ext.simpleId
 import com.wangyz.lib.ext.viewHierarchy
@@ -21,6 +22,7 @@ import com.wangyz.lib.inspector.proxy.ProxyOnClickListener
 import com.wangyz.lib.inspector.window.FloatWindow
 import com.wangyz.lib.util.HookHelper
 import com.wangyz.lib.util.LogUtils
+import com.wangyz.lib.util.TimeUtil
 import com.wangyz.lib.util.ViewHierarchyUtil
 import kotlinx.coroutines.*
 import java.util.concurrent.CopyOnWriteArrayList
@@ -61,6 +63,10 @@ class InspectorLifecycleState(private val activity: FragmentActivity) {
     private var anchorView: View? = null
 
     private var floatWindow: View? = null
+
+    private var repeatJob: Job? = null
+
+    private var times = 0
 
     private val dialog by lazy {
         EventDialog(activity, submitCallback = { id, name ->
@@ -209,18 +215,19 @@ class InspectorLifecycleState(private val activity: FragmentActivity) {
         loadConfig {
             initView()
             scrollView?.setOnScrollChangeListener(scrollChangeListener)
-
-            MainScope().launch {
-                repeat(3) {
+            repeatJob = MainScope().launch {
+                times = 0
+                repeat(Constants.REPEAT_TIMES) {
                     withContext(Dispatchers.IO) {
-                        delay(1000)
+                        times++
+                        delay(TimeUtil.fibonacci(times.toLong()) * 1000)
                         withContext(Dispatchers.Main) {
                             LogUtils.i("重新获取布局")
                             initView()
                         }
                     }
                 }
-            }.lifeRecycle(activity.lifecycle)
+            }
         }
     }
 
@@ -229,6 +236,7 @@ class InspectorLifecycleState(private val activity: FragmentActivity) {
             activity.window.windowManager.removeView(this)
         }
         resetOnclickListener()
+        repeatJob?.cancel()
     }
 
     fun onDestroy() {
@@ -243,7 +251,6 @@ class InspectorLifecycleState(private val activity: FragmentActivity) {
                 callback.invoke()
             }
     }
-
 
     private fun saveConfig() {
         config?.apply {
