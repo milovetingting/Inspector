@@ -19,8 +19,20 @@ object DrawableUtil {
 
     fun addBorder(view: View) {
         view.postDelayed({
-            val bitmap = drawableToBitmap(view.background, view.width, view.height)
-            bitmap?.apply {
+            val background = view.background
+            background?.apply {
+                val bitmap = drawableToBitmap(this, view.width, view.height)
+                bitmap?.apply {
+                    val canvas = Canvas(bitmap)
+                    val paint = Paint()
+                    paint.color = Color.parseColor("#F44336")
+                    paint.style = Paint.Style.STROKE
+                    paint.strokeWidth = 10f
+                    canvas.drawRect(0f, 0f, bitmap.width.toFloat(), bitmap.height.toFloat(), paint)
+                    view.background = BitmapDrawable(bitmap)
+                }
+            } ?: run {
+                val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
                 val canvas = Canvas(bitmap)
                 val paint = Paint()
                 paint.color = Color.parseColor("#F44336")
@@ -29,7 +41,6 @@ object DrawableUtil {
                 canvas.drawRect(0f, 0f, bitmap.width.toFloat(), bitmap.height.toFloat(), paint)
                 view.background = BitmapDrawable(bitmap)
             }
-
         }, 100)
     }
 
