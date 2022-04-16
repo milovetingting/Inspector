@@ -1,32 +1,25 @@
 package com.wangyz.lib.inspector.state
 
-import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.FrameLayout
-import android.widget.ImageView
 import androidx.core.view.isVisible
-import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.FragmentActivity
-import com.wangyz.lib.R
 import com.wangyz.lib.config.Config
 import com.wangyz.lib.config.ConfigManager
 import com.wangyz.lib.constant.Constants
-import com.wangyz.lib.ext.lifeRecycle
 import com.wangyz.lib.ext.simpleId
 import com.wangyz.lib.ext.viewHierarchy
 import com.wangyz.lib.inspector.dialog.CommitDialog
 import com.wangyz.lib.inspector.dialog.EventDialog
 import com.wangyz.lib.inspector.proxy.ProxyOnClickListener
 import com.wangyz.lib.inspector.window.FloatWindow
+import com.wangyz.lib.util.DrawableUtil.addBorder
 import com.wangyz.lib.util.HookHelper
 import com.wangyz.lib.util.LogUtils
 import com.wangyz.lib.util.TimeUtil
 import com.wangyz.lib.util.ViewHierarchyUtil
 import kotlinx.coroutines.*
-import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.atomic.AtomicBoolean
 
 
 /**
@@ -53,12 +46,6 @@ class InspectorLifecycleState(private val activity: FragmentActivity) {
     }
 
     private val views = mutableListOf<View>()
-
-    private val flags = CopyOnWriteArrayList<View>()
-
-    private val scrollView by lazy {
-        views.filterIsInstance<NestedScrollView>().firstOrNull()
-    }
 
     private var anchorView: View? = null
 
@@ -89,18 +76,6 @@ class InspectorLifecycleState(private val activity: FragmentActivity) {
             LogUtils.i("close")
             anchorView?.apply {
                 originListenerMap[anchorView]?.onClick(anchorView)
-            }
-        })
-    }
-
-    private val scrollChangeListener by lazy {
-        (View.OnScrollChangeListener { p0, p1, p2, p3, p4 ->
-            flags.forEach { view ->
-                removeFlag(view)
-                val tag = view.tag as? Pair<String, View>
-                tag?.apply {
-                    addFlag(second)
-                }
             }
         })
     }
@@ -151,48 +126,18 @@ class InspectorLifecycleState(private val activity: FragmentActivity) {
         return result
     }
 
-    private fun initFlag() {
-        clearFlag()
-        config?.configs?.filter { it.page == activity.javaClass.name }?.forEach { it ->
-            views.firstOrNull { view -> view.simpleId.toString() == it.anchor && view.isVisible }
-                ?.apply {
-                    addFlag(this)
-                }
+    private fun addFlag(view: View?) {
+        view?.apply {
+            addBorder(this)
         }
     }
 
-    private fun addFlag(anchorView: View) {
-        val anchorRect = Rect()
-        val rootViewRect = Rect()
-        anchorView.getGlobalVisibleRect(anchorRect)
-        rootView.getGlobalVisibleRect(rootViewRect)
-
-        // 创建imageView
-        val imageView = ImageView(activity)
-        imageView.tag = Pair("Flag", anchorView)
-        imageView.setImageResource(R.drawable.flag)
-        rootView.addView(imageView)
-        flags.add(imageView)
-
-        // 调整显示区域大小
-        val params = imageView.layoutParams as FrameLayout.LayoutParams
-        params.width = 50
-        params.height = 50
-        imageView.layoutParams = params
-
-        // 设置左上角显示
-        imageView.x = (anchorRect.left).toFloat()
-        imageView.y = (anchorRect.top - rootViewRect.top).toFloat()
-    }
-
-    private fun removeFlag(view: View) {
-        rootView.removeView(view)
-        flags.remove(view)
-    }
-
-    private fun clearFlag() {
-        flags.forEach { view ->
-            removeFlag(view)
+    private fun initFlag() {
+        config?.configs?.filter { it.page == activity.javaClass.name }?.forEach { it ->
+            views.firstOrNull { view -> view.simpleId.toString() == it.anchor && view.isVisible }
+                ?.apply {
+                    addBorder(this)
+                }
         }
     }
 
@@ -214,7 +159,6 @@ class InspectorLifecycleState(private val activity: FragmentActivity) {
         }
         loadConfig {
             initView()
-            scrollView?.setOnScrollChangeListener(scrollChangeListener)
             repeatJob = MainScope().launch {
                 times = 0
                 repeat(Constants.REPEAT_TIMES) {
