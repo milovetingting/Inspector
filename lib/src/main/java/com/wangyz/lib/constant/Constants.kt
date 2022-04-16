@@ -11,7 +11,7 @@ package com.wangyz.lib.constant
  * @version
  */
 object Constants {
-    const val SHOW_LOG = true
+    const val PROPERTIES_SHOW_LOG = "debug.tracker.log.show"
     const val TAG = "Layout_Inspector"
     const val REPEAT_TIMES = 10
 }
