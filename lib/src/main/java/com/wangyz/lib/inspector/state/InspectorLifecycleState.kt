@@ -17,7 +17,6 @@ import com.wangyz.lib.inspector.window.FloatWindow
 import com.wangyz.lib.util.DrawableUtil.addBorder
 import com.wangyz.lib.util.HookHelper
 import com.wangyz.lib.util.LogUtils
-import com.wangyz.lib.util.TimeUtil
 import com.wangyz.lib.util.ViewHierarchyUtil
 import kotlinx.coroutines.*
 
@@ -164,7 +163,8 @@ class InspectorLifecycleState(private val activity: FragmentActivity) {
                 repeat(Constants.REPEAT_TIMES) {
                     withContext(Dispatchers.IO) {
                         times++
-                        delay(TimeUtil.fibonacci(times.toLong()) * 1000)
+                        //配置端3秒获取一次
+                        delay(3000)
                         withContext(Dispatchers.Main) {
                             LogUtils.i("重新获取布局")
                             initView()
